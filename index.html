@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counting Days ❤️</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #fff0f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 400px;
+        }
+        h2 { color: #ff4d6d; margin-bottom: 20px; }
+        .day-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .day-item {
+            padding: 15px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid transparent;
+        }
+        .completed {
+            background: #ffe3e3;
+            color: #adb5bd;
+            text-decoration: line-through;
+        }
+        .x-mark { color: #ff4d6d; font-weight: 900; font-size: 1.2rem; }
+        .active {
+            border-color: #ff4d6d;
+            background: #fff0f3;
+            cursor: pointer;
+            color: #ff4d6d;
+        }
+        #finalMessage {
+            display: none;
+            font-size: 1.5rem;
+            color: #ff4d6d;
+            font-weight: bold;
+            margin-top: 20px;
+            animation: heartBeat 1.5s infinite;
+        }
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 id="title">Waiting for Monday...</h2>
+    <div class="day-list" id="calendar"></div>
+    <div id="finalMessage">edhuruchusthuna Bujji... come fast! 🥰❤️</div>
+</div>
+
+<script>
+    const calendar = document.getElementById('calendar');
+    const finalMessage = document.getElementById('finalMessage');
+    const today = new Date();
+    today.setHours(0,0,0,0); // Reset time for accurate comparison
+
+    // 1. Find last Sunday
+    let lastSunday = new Date();
+    lastSunday.setDate(today.getDate() - today.getDay());
+    lastSunday.setHours(0,0,0,0);
+
+    // 2. Find next Monday
+    let nextMonday = new Date();
+    nextMonday.setDate(today.getDate() + (1 + 7 - today.getDay()) % 7 || 7);
+    nextMonday.setHours(0,0,0,0);
+
+    // 3. Generate the list of days between them
+    let current = new Date(lastSunday);
+    while (current <= nextMonday) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'day-item';
+        
+        // Format: Day Name + Date
+        const options = { weekday: 'long', month: 'short', day: 'numeric' };
+        const dateString = current.toLocaleDateString('en-US', options);
+        
+        if (current < today) {
+            // Day is completed
+            dayDiv.classList.add('completed');
+            dayDiv.innerHTML = `<span>${dateString}</span> <span class="x-mark">✘</span>`;
+        } else if (current.getTime() === nextMonday.getTime()) {
+            // Target Monday
+            dayDiv.classList.add('active');
+            dayDiv.innerHTML = `<span>${dateString}</span> <span>➜</span>`;
+            dayDiv.onclick = () => {
+                document.getElementById('title').style.display = 'none';
+                calendar.style.display = 'none';
+                finalMessage.style.display = 'block';
+            };
+        } else {
+            // Future days (not yet clickable)
+            dayDiv.innerHTML = `<span>${dateString}</span> <span>⏳</span>`;
+        }
+
+        calendar.appendChild(dayDiv);
+        current.setDate(current.getDate() + 1); // Move to next day
+    }
+</script>
+
+</body>
+</html>
